@@ -18,16 +18,16 @@ Use the Teensy pin numbers printed on the board. Connect each LED anode through 
 
 | Function | Teensy pin |
 | --- | ---: |
-| Game LED 0 | 11 |
-| Game LED 1 | 10 |
-| Game LED 2 | 12 |
-| Game LED 3 | 14 |
-| Error LED (red) | 5 |
-| Win LED (green) | 6 |
+| Game LED 0 | 33 |
+| Game LED 1 | 34 |
+| Game LED 2 | 35 |
+| Game LED 3 | 36 |
+| Error LED (red) | 40 |
+| Win LED (green) | 39 |
 | Button 0 | 9 |
-| Button 1 | 2 |
-| Button 2 | 3 |
-| Button 3 | 4 |
+| Button 1 | 10 |
+| Button 2 | 11 |
+| Button 3 | 12 |
 
 Wire one side of each button to its assigned pin and the other side to GND. The code enables the Teensy's internal pull-up (`INPUT_PULLUP`), so an unpressed button reads HIGH and a pressed button reads LOW. Do not wire a button to 3.3 V for this arrangement.
 

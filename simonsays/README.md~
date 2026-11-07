@@ -1,0 +1,61 @@
+# Simon Says on Teensy 4.1
+
+This project is a single-player Simon Says game for a Teensy 4.1. The board displays a sequence on four LEDs; the player repeats it with four buttons. A wrong input resets the round to the opening two steps, and reproducing the full 12-step sequence signals a win.
+
+The design is described in `Simon Says - Embedded Systems Game.pptx`. The implementation is in `simonsays.c`.
+
+## Parts
+
+- Teensy 4.1 and USB cable
+- Four game LEDs, one red error LED, one green win LED
+- Six current-limiting resistors for the LEDs (typically 220–1,000 Ω; choose for the LED and desired current)
+- Four normally-open pushbuttons
+- Breadboard and jumper wires
+
+## Wiring
+
+Use the Teensy pin numbers printed on the board. Connect each LED anode through its own resistor to the listed GPIO pin; connect each LED cathode to GND. Do not connect an LED directly to a GPIO pin.
+
+| Function | Teensy pin |
+| --- | ---: |
+| Game LED 0 | 36 |
+| Game LED 1 | 35 |
+| Game LED 2 | 34 |
+| Game LED 3 | 33 |
+| Error LED (red) | 5 |
+| Win LED (green) | 6 |
+| Button 0 | 9 |
+| Button 1 | 2 |
+| Button 2 | 3 |
+| Button 3 | 4 |
+
+Wire one side of each button to its assigned pin and the other side to GND. The code enables the Teensy's internal pull-up (`INPUT_PULLUP`), so an unpressed button reads HIGH and a pressed button reads LOW. Do not wire a button to 3.3 V for this arrangement.
+
+## Code behavior
+
+- `led_pins` and `btn_pins` map the four game choices. Sequence values 0–3 index both arrays.
+- `sequence` is a fixed 12-entry pattern: `2, 1, 0, 1, 3, 3, 2, 1, 0, 2, 3, 0`.
+- `display_sequence(length)` lights each corresponding LED for 500 ms, with a 500 ms gap.
+- `get_button_press()` polls the four buttons, lights the selected LED while held, and waits for release so one hold counts once.
+- `get_player_input(length)` checks the player's choices against the displayed prefix.
+- A correct round increases the prefix length. A mistake lights red and flashes all four game LEDs twice, then starts again at length two.
+- After all 12 entries are repeated, green lights for two seconds and a new game starts.
+
+Button input is polled without debounce. If a button produces duplicate or inconsistent readings, add debounce timing or hardware filtering. The pattern is fixed rather than randomly generated.
+
+## Build and upload with Arduino IDE / Teensyduino
+
+The source as provided is a bare-metal-style C file with a `main()` function and declarations for Teensy functions. Arduino/Teensyduino sketches normally provide `setup()` and `loop()` and link against the Teensy core. For the straightforward Teensyduino workflow:
+
+1. Install Arduino IDE and Teensyduino, then select **Teensy 4.1** and the appropriate USB type in the Tools menu.
+2. Create a sketch and copy the game logic from `simonsays.c` into it. Remove the local `#define HIGH/LOW/OUTPUT/INPUT_PULLUP`, the four function prototypes, and `main()`; those constants and functions are provided by the Teensy Arduino core.
+3. Put the pin initialization currently at the beginning of `main()` into `setup()`.
+4. Put the infinite game loop body into `loop()`: remove `while (1) { ... }` and its matching closing brace. Arduino calls `loop()` repeatedly. Keep `current_length` initialized to 2 for each new game; after the win sequence, `loop()` will begin again.
+5. Compile, connect the Teensy by USB, and use **Upload**. Press the Teensy's program button if the loader requests it.
+6. Power down before wiring, check each pin and LED polarity, then reconnect USB and play.
+
+The Teensy 4.1 uses 3.3 V GPIO and its pins are not 5 V tolerant. Keep all signals within the board's electrical limits. Use a shared ground, and size LED resistors to limit current.
+
+### Alternative: keep the C `main()` form
+
+The provided file declares Teensy functions but does not implement the hardware startup or those functions. It is not a complete standalone firmware image. Retaining `main()` requires a Teensy-compatible build setup that links the Teensy core and correctly provides startup, timing, and GPIO support. Do not compile it as a generic desktop C program; for most users, adapting it to a Teensyduino sketch as above is simpler.

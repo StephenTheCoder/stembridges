@@ -19,17 +19,17 @@ void delay(uint32_t milliseconds);
 // ============================================================
 
 // Pin assignments: Teensy 4.1 board pin numbers
-#define LED0 11
-#define LED1 10
-#define LED2 12
-#define LED3 14
-#define LED5 5   // Red: wrong answer
-#define LED6 6   // Green: win
+#define LED0 33
+#define LED1 34
+#define LED2 35
+#define LED3 36
+#define LED5 40   // Red: wrong answer
+#define LED6 39  // Green: win
 
 #define BTN0 9
-#define BTN1 2
-#define BTN2 3
-#define BTN3 4
+#define BTN1 10
+#define BTN2 11
+#define BTN3 12
 
 int led_pins[4] = {LED0, LED1, LED2, LED3};
 int btn_pins[4] = {BTN0, BTN1, BTN2, BTN3};
