@@ -77,8 +77,7 @@ int get_button_press(void) {
 
     led_on(led);
 
-    // Wait for release so a held button is counted once.
-    // No debouncing is performed.
+    // Wait for release so a held button is counted once
     while (press_button(btn_pin));
 
     led_off(led);
